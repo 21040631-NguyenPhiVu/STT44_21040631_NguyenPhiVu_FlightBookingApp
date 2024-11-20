@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, SafeAreaVie
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 
-export default function StartScreen() {
+export default function MultiCity() {
     const navigation = useNavigation();
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -15,13 +15,13 @@ export default function StartScreen() {
                 </View>
 
                 <View style={styles.navContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('RoundTrip')}>
                         <Text style={{ fontSize: 17, color: '#565E6C' }}>Round-trip</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity >
+                    <TouchableOpacity onPress={() => navigation.navigate('OneWay')}>
                         <Text style={{ fontSize: 17, fontWeight: "400", color: '#565E6C' }}>One-way</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.navItem}>
+                    <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('MultiCity')}>
                         <Text style={{ fontSize: 17, fontWeight: "bold", color: '#323842' }}>Multi-city</Text>
                         <View style={styles.line}></View>
                     </TouchableOpacity>

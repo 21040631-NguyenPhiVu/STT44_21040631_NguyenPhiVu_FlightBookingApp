@@ -1,11 +1,46 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, SafeAreaView, ScrollView, Modal, FlatList } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, SafeAreaView, ScrollView, Modal } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { getStatusBarHeight } from "react-native-status-bar-height";
-import { StatusBar } from "react-native";
 
-export default function RoundTrip() {
-    const navigation = useNavigation();
+export default function Payment({ route, navigation }) {
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode } = route.params;
+    const [modalVisible, setModalVisible] = useState(false);
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardHolder, setCardHolder] = useState('');
+    const [expiryDate, setExpiryDate] = useState('');
+    const [cvv, setCvv] = useState('');
+    const [cards, setCards] = useState([
+        { type: 'MasterCard', number: '**** 9876' }
+    ]);
+    const [editIndex, setEditIndex] = useState(null);
+
+    const handleAddCard = () => {
+        if (cardNumber && cardHolder && expiryDate && cvv) {
+            if (editIndex !== null) {
+                const updatedCards = [...cards];
+                updatedCards[editIndex] = { type: 'MasterCard', number: `**** ${cardNumber.slice(-4)}` };
+                setCards(updatedCards);
+                setEditIndex(null);
+            } else {
+                setCards([...cards, { type: 'MasterCard', number: `**** ${cardNumber.slice(-4)}` }]);
+            }
+            setModalVisible(false);
+            setCardNumber('');
+            setCardHolder('');
+            setExpiryDate('');
+            setCvv('');
+        }
+    };
+
+    const handleEditCard = (index) => {
+        const card = cards[index];
+        setCardNumber(card.number.replace('**** ', ''));
+        setCardHolder(card.type);
+        setExpiryDate('');
+        setCvv('');
+        setEditIndex(index);
+        setModalVisible(true);
+    };
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -21,16 +56,20 @@ export default function RoundTrip() {
                 <ScrollView style={{ width: '100%', height: 400 }}>
                     <Text style={styles.paymentText}>Payment method</Text>
                     <View style={[styles.cardContainer, { marginHorizontal: 20, marginVertical: 10 }]}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image source={require("../assets/images/radioChecked.png")} style={{ width: 25, height: 25, resizeMode: 'cover', marginLeft: 20 }} />
-                            <Image source={require("../assets/images/masterCardIcon.png")} style={{ width: 45, height: 45, resizeMode: 'contain', marginLeft: 15 }} />
-                            <Text style={styles.textTypeCard}>MasterCard **** 9876</Text>
-                            <TouchableOpacity style={styles.btnEdit}>
-                                <Text style={{ fontSize: 18, color: '#10626A' }}>Edit</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.separator}></View>
-                        <TouchableOpacity style={styles.btnAddCard}>
+                        {cards.map((card, index) => (
+                            <View key={index}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Image source={require("../assets/images/radioChecked.png")} style={{ width: 25, height: 25, resizeMode: 'cover', marginLeft: 20 }} />
+                                    <Image source={require("../assets/images/masterCardIcon.png")} style={{ width: 45, height: 45, resizeMode: 'contain', marginLeft: 15 }} />
+                                    <Text style={styles.textTypeCard}>{card.type} {card.number}</Text>
+                                    <TouchableOpacity style={styles.btnEdit} onPress={() => handleEditCard(index)}>
+                                        <Text style={{ fontSize: 18, color: '#10626A' }}>Edit</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.separator}></View>
+                            </View>
+                        ))}
+                        <TouchableOpacity style={styles.btnAddCard} onPress={() => setModalVisible(true)}>
                             <Text style={styles.textNewCard}>+ New card</Text>
                         </TouchableOpacity>
                     </View>
@@ -40,12 +79,12 @@ export default function RoundTrip() {
                     <View style={styles.infoContainer}>
                         <View style={styles.infoItemLeft}>
                             <Image source={require("../assets/images/Profile.png")} style={{ width: 25, height: 25, resizeMode: 'contain' }} />
-                            <Text style={{ fontSize: 18, color: '#323842', marginLeft: 15 }}>Pedro Moreno</Text>
+                            <Text style={{ fontSize: 18, color: '#323842', marginLeft: 15 }}>{firstName} {lastName}</Text>
                         </View>
                         <View style={styles.infoItemRight}>
                             <Text style={{ fontSize: 18, color: '#9095A0', marginLeft: 15 }}>Adult </Text>
                             <View style={styles.circle}></View>
-                            <Text style={{ fontSize: 18, color: '#9095A0', marginLeft: 15 }}>Male</Text>
+                            <Text style={{ fontSize: 18, color: '#9095A0', marginLeft: 15 }}>{gender}</Text>
                         </View>
                     </View>
 
@@ -54,29 +93,76 @@ export default function RoundTrip() {
                     <View style={styles.infoContainer}>
                         <View style={styles.infoItemLeft}>
                             <Image source={require("../assets/images/mailIcon.png")} style={{ width: 45, height: 245, resizeMode: 'contain' }} />
-                            <Text style={{ fontSize: 18, color: '#323842', marginLeft: 15 }}>pedromoreno@gmail.com</Text>
+                            <Text style={{ fontSize: 18, color: '#323842', marginLeft: 15 }}>{email}</Text>
                         </View>
                     </View>
                     <View style={styles.infoContainer}>
                         <View style={styles.infoItemLeft}>
                             <Image source={require("../assets/images/callIcon.png")} style={{ width: 45, height: 45, resizeMode: 'contain' }} />
-                            <Text style={{ fontSize: 18, color: '#323842', marginLeft: 15 }}>(208) 567-8209</Text>
+                            <Text style={{ fontSize: 18, color: '#323842', marginLeft: 15 }}>({phoneCode}) {phone}</Text>
                         </View>
                     </View>
-
-
                 </ScrollView>
 
                 <View style={styles.footer}>
                     <View>
-                        <Text style={{ fontSize: 20, color: '#323842', marginLeft: 20, fontWeight: 'bold' }}>$811.56</Text>
-                        <Text style={{ fontSize: 18, color: '#9095A0', marginLeft: 20, }}>1 adult</Text>
+                        <Text style={{ fontSize: 20, color: '#323842', marginLeft: 20, fontWeight: 'bold' }}>${totalPrice.toFixed(2)}</Text>
+                        <Text style={{ fontSize: 18, color: '#9095A0', marginLeft: 20, }}>{passengers.adults + passengers.children + passengers.infants} traveller{passengers.adults + passengers.children + passengers.infants > 1 ? 's' : ''}</Text>
                     </View>
-                    <TouchableOpacity style={styles.btnCheckout}>
+                    <TouchableOpacity style={styles.btnCheckout} onPress={() => navigation.navigate('BookingSuccessful', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode })}>
                         <Text style={styles.textCheckout}>Checkout</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>{editIndex !== null ? 'Edit Card' : 'Add New Card'}</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Card Number"
+                            value={cardNumber}
+                            onChangeText={setCardNumber}
+                            keyboardType="numeric"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Card Holder Name"
+                            value={cardHolder}
+                            onChangeText={setCardHolder}
+                        />
+                        <View style={styles.row}>
+                            <TextInput
+                                style={[styles.input, styles.halfInput]}
+                                placeholder="Expiry Date (MM/YY)"
+                                value={expiryDate}
+                                onChangeText={setExpiryDate}
+                                keyboardType="numeric"
+                            />
+                            <TextInput
+                                style={[styles.input, styles.halfInput]}
+                                placeholder="CVV"
+                                value={cvv}
+                                onChangeText={setCvv}
+                                keyboardType="numeric"
+                                secureTextEntry
+                            />
+                        </View>
+                        <TouchableOpacity style={styles.btnAddCard} onPress={handleAddCard}>
+                            <Text style={styles.textNewCard}>{editIndex !== null ? 'Save Changes' : 'Add Card'}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.btnCancel} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.textCancel}>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
@@ -116,12 +202,12 @@ const styles = StyleSheet.create({
         borderColor: '#f3f4f6',
         width: '90%',
         borderRadius: 8,
-        backgroundColor: '#fff', // Đảm bảo container có nền trắng
-        shadowColor: '#000', // Màu của bóng
-        shadowOffset: { width: 0, height: 4 }, // Vị trí bóng đổ
-        shadowOpacity: 0.1, // Độ mờ của bóng
-        shadowRadius: 6, // Kích thước bóng đổ
-        elevation: 6, // Dùng cho Android để tạo bóng
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 6,
     },
     textTypeCard: { fontSize: 18, color: '#323842', marginLeft: 10 },
     btnEdit: {
@@ -200,5 +286,49 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#fff',
         textAlign: 'center',
-    }
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '90%',
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 20,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        fontSize: 16,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    halfInput: {
+        width: '48%',
+    },
+    btnCancel: {
+        marginTop: 10,
+    },
+    textCancel: {
+        fontSize: 18,
+        color: '#FF0000',
+        textAlign: 'center',
+    },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Dimensions, ScrollView } from 'react-native';
 
 const PassengerOptionsModal = ({ visible, onClose, onSave }) => {
@@ -8,13 +8,21 @@ const PassengerOptionsModal = ({ visible, onClose, onSave }) => {
         infants: 0
     });
     const [selectedClass, setSelectedClass] = useState('Economy');
+    const [cabinClasses, setCabinClasses] = useState([]);
 
-    const cabinClasses = [
-        'Economy',
-        'Premium Economy',
-        'Business',
-        'First'
-    ];
+    useEffect(() => {
+        const fetchCabinClasses = async () => {
+            try {
+                const response = await fetch('http://localhost:4000/api/cabin-classes');
+                const data = await response.json();
+                setCabinClasses(data.map(item => item.name));
+            } catch (err) {
+                console.error('Error fetching cabin classes:', err);
+            }
+        };
+
+        fetchCabinClasses();
+    }, []);
 
     const handlePassengerChange = (type, increment) => {
         setPassengers(prev => ({
@@ -255,10 +263,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 16,
-        borderTopWidth: 1,         // Thêm borderTop
-        borderBottomWidth: 1,      // Thêm borderBottom
-        borderTopColor: '#f3f4f6', // Màu của borderTop
-        borderBottomColor: '#f3f4f6', // Màu của borderBottom
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderTopColor: '#f3f4f6',
+        borderBottomColor: '#f3f4f6',
     },
     cabinClassText: {
         fontSize: 18,
@@ -276,8 +284,8 @@ const styles = StyleSheet.create({
     },
     roundTripContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between', // Đặt khoảng cách đều giữa các thành phần
-        alignItems: 'center', // Canh giữa theo chiều dọc
+        justifyContent: 'space-between',
+        alignItems: 'center',
         width: '100%',
     },
     roundTripText: {

@@ -1,28 +1,36 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const SeatSelectionScreen = () => {
-    const [selectedSeat, setSelectedSeat] = useState(null);
+const SeatSelectionScreen = ({ route, navigation }) => {
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice: initialTotalPrice, ticketType } = route.params;
+    const [selectedSeats, setSelectedSeats] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
 
     const seats = [
-        ['A', 'B', 'C', 'rowHeader', 'D', 'E', 'F'], // Chèn rowHeader vào giữa C và D
-        ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'], // Hàng ghế từ 01 đến 10
+        ['A', 'B', 'C', 'rowHeader', 'D', 'E', 'F'],
+        ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'],
     ];
 
     const availableSeats = ['A01', 'A02', 'A03', 'B03', 'D03'];
-    const selectedSeats = [selectedSeat];
 
     const isAvailable = (seat) => availableSeats.includes(seat);
     const isSelected = (seat) => selectedSeats.includes(seat);
 
     const handleSelectSeat = (seat) => {
-        setSelectedSeat(seat === selectedSeat ? null : seat);
+        if (isSelected(seat)) {
+            setSelectedSeats(selectedSeats.filter(s => s !== seat));
+            setTotalPrice(totalPrice - 4.59);
+        } else {
+            setSelectedSeats([...selectedSeats, seat]);
+            setTotalPrice(totalPrice + 4.59);
+        }
     };
 
     const renderSeat = (seat, row) => {
         if (seat === 'rowHeader') {
             return (
-                <Text key={row} style={styles.rowHeader}>{row}</Text> // Cột số thứ tự hàng ghế
+                <Text key={row} style={styles.rowHeader}>{row}</Text>
             );
         }
 
@@ -42,13 +50,17 @@ const SeatSelectionScreen = () => {
         );
     };
 
+    const handleConfirmSelection = () => {
+        navigation.navigate('Seat', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType });
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Image source={require('../assets/images/arrowLeft.png')} style={{ width: 35, height: 35 }} />
                 </TouchableOpacity>
-                <Text style={styles.title}>LCY - JFK</Text>
+                <Text style={styles.title}>{from} - {to}</Text>
             </View>
             <View style={styles.separator} />
             <View style={styles.legend}>
@@ -63,7 +75,9 @@ const SeatSelectionScreen = () => {
                     <Text style={{ color: '#9095A0', fontSize: 16 }}>Unavailable seat</Text>
                 </View>
                 <View style={styles.legendItem}>
-                    <View style={[styles.legendBox, styles.selectedSeat]} />
+                    <View style={[styles.legendBox, styles.selectedSeat]} >
+                        <Image source={require('../assets/images/Check.png')} style={{ width: 20, height: 20 }} />
+                    </View>
                     <Text style={{ color: '#9095A0', fontSize: 16 }}>Selected</Text>
                 </View>
             </View>
@@ -91,19 +105,19 @@ const SeatSelectionScreen = () => {
             </View>
             <View style={styles.footer}>
                 <Text style={styles.footerText}>
-                    {selectedSeat ? (
+                    {selectedSeats.length > 0 ? (
                         <>
-                            Select seat 1 of 1
+                            Selected seats: {selectedSeats.join(', ')}
                             {'\n'}
                             <Text style={styles.selectedSeatText}>
-                                Seat {selectedSeat} - $5.68
+                                Total: ${(selectedSeats.length * 4.59).toFixed(2)}
                             </Text>
                         </>
                     ) : (
-                        <Text style={styles.noSeatText}>No seat selected</Text>
+                        <Text style={styles.noSeatText}>No seats selected</Text>
                     )}
                 </Text>
-                <TouchableOpacity style={styles.selectButton}>
+                <TouchableOpacity style={styles.selectButton} onPress={handleConfirmSelection}>
                     <Text style={styles.selectButtonText}>Select</Text>
                 </TouchableOpacity>
             </View>
@@ -121,11 +135,11 @@ const styles = StyleSheet.create({
     legendBox: { width: 30, height: 30, marginRight: 15, borderRadius: 3, marginLeft: 12 },
     availableSeat: { backgroundColor: '#FFFFFF', borderColor: '#9095A0', borderWidth: 1 },
     unavailableSeat: { backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#f3f4f6' },
-    selectedSeat: { backgroundColor: '#2C46C3' },
+    selectedSeat: { backgroundColor: '#2C46C3', justifyContent: 'center', alignItems: 'center', },
     seatMap: { flexDirection: 'column', alignItems: 'center' },
     row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', marginVertical: 5 },
     rowHeader: { width: 40, textAlign: 'center', color: '#565E6C', fontSize: 16, fontWeight: '500' },
-    rowHeaderSpacer: { width: 30 }, // Đặt khoảng trống cho vị trí tiêu đề hàng
+    rowHeaderSpacer: { width: 30 },
     columnHeader: { width: 40, textAlign: 'center', color: '#565E6C', fontSize: 16, fontWeight: '500' },
     seat: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginHorizontal: 5 },
     unavailableText: { color: '#999', fontWeight: 'bold' },

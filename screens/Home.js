@@ -1,9 +1,19 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, SafeAreaView, ScrollView } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import RoundTrip from "../screens/RoundTrip";
 
-export default function StartScreen() {
+export default function StartScreen({ route }) {
+    const { user, initialName } = route.params;
     const navigation = useNavigation();
+    const [visible, setVisible] = useState(false);
+    const [keyword, setKeyword] = useState('');
+    const toggleModal = () => {
+        setVisible(!visible);
+    };
+    const closeModal = () => {
+        setVisible(false);
+    };
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -16,7 +26,7 @@ export default function StartScreen() {
                         </View>
                     </View>
                     <View style={styles.avatar}>
-                        <Text style={styles.name}>A</Text>
+                        <Text style={styles.name}>{initialName}</Text>
                     </View>
                 </View>
                 <ScrollView style={{ width: '100%', height: 500 }}>
@@ -26,6 +36,9 @@ export default function StartScreen() {
                             placeholder="Find a flight"
                             placeholderTextColor={'#9095A0'}
                             style={styles.input}
+                            value={keyword}
+                            onChangeText={setKeyword}
+                            onFocus={toggleModal}
                         />
                     </View>
 
@@ -97,8 +110,6 @@ export default function StartScreen() {
                         </View>
                     </ScrollView>
 
-
-
                 </ScrollView>
                 <View style={styles.footer}>
                     <View style={styles.footerItem}>
@@ -115,90 +126,31 @@ export default function StartScreen() {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.footerItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('FlightList')} style={{ alignItems: 'center' }}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Profile', { user, initialName })} style={{ alignItems: 'center' }}>
                             <Image source={require('../assets/images/Profile.png')} style={{ width: 30, height: 30, resizeMode: 'cover' }} />
                             <Text style={{ color: '#9095A0', fontSize: 14 }}>Profile</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
+            <RoundTrip visible={visible} onClose={closeModal} />
         </SafeAreaView >
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-    },
-    headerContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 20,
-    },
-    headerContainerLeft: {
-        flexDirection: "row",
-    },
-    logo: {
-        width: 60,
-        height: 60,
-        borderRadius: 12,
-    },
-    containerTitle: {
-        marginLeft: 15,
-    },
-    titleApp: {
-        fontSize: 23,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-    subTitileApp: {
-        fontSize: 15,
-        color: "gray",
-        fontWeight: '300',
-    },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 50,
-        backgroundColor: "#F06A6A",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    name: {
-        color: "#fff",
-        fontSize: 20,
-        fontWeight: "400",
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        backgroundColor: '#f3f4f6',
-        marginHorizontal: 20,
-        marginVertical: 40,
-        borderRadius: 12,
-        height: 50,
-    },
-    iconSearch: {
-        width: 30,
-        height: 30,
-        tintColor: '#9095A0',
-        marginHorizontal: 15,
-        alignSelf: 'center'
-    },
-    input: {
-        paddingLeft: 10,
-        borderRadius: 5,
-        fontSize: 18,
-        width: '100%'
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        height: 70,
-    },
-    footerItem: {
-        alignItems: 'center',
-    },
+    container: { flex: 1, backgroundColor: "#fff" },
+    headerContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20 },
+    headerContainerLeft: { flexDirection: "row" },
+    logo: { width: 60, height: 60, borderRadius: 12 },
+    containerTitle: { marginLeft: 15 },
+    titleApp: { fontSize: 23, fontWeight: "bold", marginBottom: 10 },
+    subTitileApp: { fontSize: 15, color: "gray", fontWeight: '300' },
+    avatar: { width: 50, height: 50, borderRadius: 50, backgroundColor: "#F06A6A", justifyContent: "center", alignItems: "center" },
+    name: { color: "#fff", fontSize: 20, fontWeight: "400" },
+    searchContainer: { flexDirection: 'row', backgroundColor: '#f3f4f6', marginHorizontal: 20, marginVertical: 40, borderRadius: 12, height: 50 },
+    iconSearch: { width: 30, height: 30, tintColor: '#9095A0', marginHorizontal: 15, alignSelf: 'center' },
+    input: { paddingLeft: 10, borderRadius: 5, fontSize: 18, width: '100%' },
+    footer: { flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', height: 70 },
+    footerItem: { alignItems: 'center' },
 });

@@ -1,11 +1,51 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Alert, Modal } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import AlertModal from './AlertModal';
 
-export default function StartScreen() {
+export default function LoginScreen() {
     const navigation = useNavigation();
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState("");
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            setModalMessage("Please fill in all required fields.");
+            setModalVisible(true);
+            return;
+        }
+
+        try {
+            const response = await fetch('http://192.168.0.178:4000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.status === 200) {
+                setModalMessage("Login successful");
+                setModalVisible(true);
+                const initialName = data.user.lastName.charAt(0).toUpperCase();
+                navigation.navigate('Home', { user: data.user, initialName });
+            } else {
+                setModalMessage(data.message || "Login failed");
+                setModalVisible(true);
+            }
+        } catch (error) {
+            setModalMessage("An error occurred. Please try again.");
+            setModalVisible(true);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Image source={require('../assets/images/FlyMate.png')} style={styles.logo} />
@@ -14,14 +54,17 @@ export default function StartScreen() {
                     <Text style={{ fontSize: 21, color: "#0d308c", fontWeight: '400', alignSelf: 'center', paddingBottom: 10 }}>Login</Text>
                     <View style={{ borderBottomWidth: 4, borderBottomColor: "#0d308c", alignItems: 'center' }}></View>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.row} onPress={() => navigation.navigate('RegisterScreen')}>
+                <TouchableOpacity style={styles.row} onPress={() => {
+                    setModalVisible(false);
+                    navigation.navigate('RegisterScreen');
+                }}>
                     <Text style={{ fontSize: 21, color: "#d8d8d8", fontWeight: '400', alignSelf: 'center', paddingBottom: 10 }}>Register</Text>
                     <View style={{ borderBottomWidth: 4, borderBottomColor: "#d8d8d8", alignItems: 'center' }}></View>
                 </TouchableOpacity>
             </View>
 
             <View style={styles.inputContainer}>
-                <TextInput placeholder="Enter your email" placeholderTextColor="#d8d8d8" value={username} onChangeText={setUsername} style={styles.input} />
+                <TextInput placeholder="Enter your email" placeholderTextColor="#d8d8d8" value={email} onChangeText={setEmail} style={styles.input} />
             </View>
 
             <View style={styles.inputContainer}>
@@ -33,7 +76,7 @@ export default function StartScreen() {
                 <View style={{ borderBottomWidth: 1, borderBottomColor: "#000", width: 100 }}></View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.btnLogin}>
+            <TouchableOpacity style={styles.btnLogin} onPress={handleLogin}>
                 <Text style={{ fontSize: 21, color: "#fff", fontWeight: '400' }}>Login</Text>
             </TouchableOpacity>
 
@@ -54,6 +97,12 @@ export default function StartScreen() {
                     <Image source={require('../assets/images/facebookicon.png')} style={{ width: 40, height: 40, resizeMode: "contain" }} />
                 </TouchableOpacity>
             </View>
+
+            <AlertModal
+                visible={modalVisible}
+                message={modalMessage}
+                onClose={() => setModalVisible(false)}
+            />
         </View >
     );
 }

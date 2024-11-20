@@ -1,7 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { SafeAreaView, View, Text, TouchableOpacity, Image, ScrollView, StyleSheet } from "react-native";
+import { format } from 'date-fns';
+import Heart from "react-animated-heart";
 
 const FlightDetails = ({ route, navigation }) => {
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType } = route.params;
+    const [likedFlights, setLikedFlights] = useState([]);
+    const formattedDepartDate = departDate ? departDate : '';
+    const formattedReturnDate = returnDate ? returnDate : '';
+    const [isInfoVisible, setIsInfoVisible] = useState({});
+
+    const toggleInfoVisibility = (index) => {
+        setIsInfoVisible(prevState => ({
+            ...prevState,
+            [index]: !prevState[index]
+        }));
+    };
+
+    const toggleLike = (index) => {
+        setLikedFlights((prevLikedFlights) => {
+            if (prevLikedFlights.includes(index)) {
+                return prevLikedFlights.filter((i) => i !== index);
+            } else {
+                return [...prevLikedFlights, index];
+            }
+        });
+    };
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -13,9 +38,7 @@ const FlightDetails = ({ route, navigation }) => {
                         <Text style={styles.title}>Flight details</Text>
                     </View>
                     <View style={styles.headerRight}>
-                        <TouchableOpacity style={styles.LoveBtn} onPress={() => navigation.navigate('SeatSelection')}>
-                            <Image source={require('../assets/images/LoveIcon.png')} style={{ width: 45, height: 45 }} />
-                        </TouchableOpacity>
+                        <Heart isClick={likedFlights.includes(flight.id)} onClick={() => toggleLike(flight.id)} />
                         <TouchableOpacity>
                             <Image source={require('../assets/images/shareIcon.png')} style={{ width: 30, height: 30 }} />
                         </TouchableOpacity>
@@ -25,13 +48,13 @@ const FlightDetails = ({ route, navigation }) => {
 
                 <ScrollView style={{ width: '100%', height: 500, paddingBottom: 70 }}>
                     <View style={styles.section}>
-                        <Text style={styles.tripToText}>Your trip to New York</Text>
-                        <Text style={styles.fromText}>from London</Text>
+                        <Text style={styles.tripToText}>Your trip to {to}</Text>
+                        <Text style={styles.fromText}>from {from}</Text>
                     </View>
 
                     <View style={[styles.section, { marginTop: 0 }]}>
                         <TouchableOpacity style={styles.dateTimeBtn}>
-                            <Text style={styles.dateTimeText}>Fri, Jul 14 - Sun, Jul 17</Text>
+                            <Text style={styles.dateTimeText}>{formattedDepartDate} - {formattedReturnDate}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -40,123 +63,93 @@ const FlightDetails = ({ route, navigation }) => {
                         <View style={[styles.section, { flexDirection: 'row', alignItems: 'center' }]}>
                             <View style={styles.items}>
                                 <Image source={require('../assets/images/personalTrainer.png')} style={{ width: 25, height: 25 }} />
-                                <Text style={styles.itemText}>1 traveller</Text>
+                                <Text style={styles.itemText}>{passengers.adults + passengers.children + passengers.infants} traveller{passengers.adults + passengers.children + passengers.infants > 1 ? 's' : ''}</Text>
                             </View>
                             <View style={styles.dot} />
                             <View style={styles.items}>
                                 <Image source={require('../assets/images/airlineSeatReclineExtra.png')} style={{ width: 25, height: 25 }} />
-                                <Text style={styles.itemText}>Economy</Text>
+                                <Text style={styles.itemText}>{cabinClass}</Text>
                             </View>
                             <View style={styles.dot} />
                             <View style={styles.items}>
                                 <Image source={require('../assets/images/airplaneTicket.png')} style={{ width: 25, height: 25 }} />
-                                <Text style={styles.itemText}>Round-trip</Text>
+                                <Text style={styles.itemText}>{ticketType}</Text>
                             </View>
                         </View>
-                        <View style={styles.separator} />
                     </View>
 
-                    <View style={styles.content}>
-                        <View style={styles.location}>
-                            <View>
-                                <Text style={styles.departureText}>London -</Text>
-                                <Text style={styles.destinationText}>New York city</Text>
-                            </View>
-                            <View>
-                                <Text style={styles.code}>SkyHaven</Text>
-                                <Text style={styles.code}>FD695</Text>
+                    {flight.legs.map((leg, index) => (
+                        <View key={index}>
+                            <View style={styles.separator} />
+                            <View style={styles.content}>
+                                <View style={styles.location}>
+                                    <View>
+                                        <Text style={styles.departureText}>{index === 0 ? from : to} -</Text>
+                                        <Text style={styles.destinationText}>{index === 0 ? to : from}</Text>
+                                    </View>
+                                    <View>
+                                        <Text style={styles.code}>{leg.airline}</Text>
+                                        <Text style={styles.code}>{leg.flightNo}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.separator} />
+
+                                <View style={styles.location}>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text style={styles.departureText}>{leg.departureTime}</Text>
+                                        <Text style={[styles.dateText, { marginVertical: 10 }]}>{leg.departDate}</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text style={styles.stopText}>{leg.stops}</Text>
+                                        <View style={{ width: 100, borderWidth: 1, borderColor: '#f3f4f6', marginVertical: 10 }} />
+                                        <Text style={styles.stopText}>{leg.duration}</Text>
+                                    </View>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text style={styles.departureText}>{leg.arrivalTime}</Text>
+                                        <Text style={[styles.dateText, { marginVertical: 10 }]}>{leg.arrivalDate}</Text>
+                                    </View>
+                                </View>
+
+                                <View style={styles.separator} />
+                                {isInfoVisible[index] && (
+                                    <View style={styles.section}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={styles.items}>
+                                                <Image source={require('../assets/images/babyCarSeat.png')} style={{ width: 25, height: 25 }} />
+                                                <Text style={styles.convenientText}>{leg.amenities.seatPitch}</Text>
+                                            </View>
+                                            <View style={styles.items}>
+                                                <Image source={require('../assets/images/food.png')} style={{ width: 25, height: 25 }} />
+                                                <Text style={styles.convenientText}>{leg.amenities.meal}</Text>
+                                            </View>
+                                        </View>
+
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+                                            <View style={styles.items}>
+                                                <Image source={require('../assets/images/wifiIcon.png')} style={{ width: 25, height: 25 }} />
+                                                <Text style={styles.convenientText}>{leg.amenities.wifi}</Text>
+                                            </View>
+                                            <View style={styles.items}>
+                                                <Image source={require('../assets/images/phoneCharging.png')} style={{ width: 25, height: 25 }} />
+                                                <Text style={styles.convenientText}>{leg.amenities.power}</Text>
+                                            </View>
+                                        </View>
+
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={styles.items}>
+                                                <Image source={require('../assets/images/entertainmentIcon.png')} style={{ width: 25, height: 25 }} />
+                                                <Text style={styles.convenientText}>{leg.amenities.entertainment}</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                )}
+
+                                <TouchableOpacity style={styles.btnShow} onPress={() => toggleInfoVisibility(index)}>
+                                    <Text style={styles.showText}>{isInfoVisible[index] ? 'Less info' : 'More info'}</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={styles.separator} />
-
-                        <View style={styles.location}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.departureText}>6:30 AM</Text>
-                                <Text style={[styles.dateText, { marginVertical: 10 }]}>Tue, Jul 14</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.stopText}>1 stop</Text>
-                                <View style={{ width: 100, borderWidth: 1, borderColor: '#f3f4f6', marginVertical: 10 }} />
-                                <Text style={styles.stopText}>7h30m</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.departureText}>2:00 PM</Text>
-                                <Text style={[styles.dateText, { marginVertical: 10 }]}>Tue, Jul 14</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.separator} />
-                        <View style={styles.section}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={styles.items}>
-                                    <Image source={require('../assets/images/babyCarSeat.png')} style={{ width: 25, height: 25 }} />
-                                    <Text style={styles.convenientText}>28'' seat pitch</Text>
-                                </View>
-                                <View style={styles.items}>
-                                    <Image source={require('../assets/images/food.png')} style={{ width: 25, height: 25 }} />
-                                    <Text style={styles.convenientText}>Light meal</Text>
-                                </View>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
-                                <View style={styles.items}>
-                                    <Image source={require('../assets/images/wifiIcon.png')} style={{ width: 25, height: 25 }} />
-                                    <Text style={styles.convenientText}>Chance of Wifi</Text>
-                                </View>
-                                <View style={styles.items}>
-                                    <Image source={require('../assets/images/phoneCharging.png')} style={{ width: 25, height: 25 }} />
-                                    <Text style={styles.convenientText}>No power outlet</Text>
-                                </View>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <View style={styles.items}>
-                                    <Image source={require('../assets/images/entertainmentIcon.png')} style={{ width: 25, height: 25 }} />
-                                    <Text style={styles.convenientText}>No entertaiment</Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <TouchableOpacity style={styles.btnShow}>
-                            <Text style={styles.showText}>Less info</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.content}>
-                        <View style={styles.location}>
-                            <View>
-                                <Text style={styles.departureText}>New York city</Text>
-                                <Text style={styles.destinationText}>- London</Text>
-                            </View>
-                            <View>
-                                <Text style={styles.code}>EcoWings</Text>
-                                <Text style={styles.code}>FD695</Text>
-                            </View>
-                        </View>
-                        <View style={styles.separator} />
-
-                        <View style={styles.location}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.departureText}>10:00 PM</Text>
-                                <Text style={[styles.dateText, { marginVertical: 10 }]}>Fri, Jul 17</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.stopText}>Direct</Text>
-                                <View style={{ width: 100, borderWidth: 1, borderColor: '#f3f4f6', marginVertical: 10 }} />
-                                <Text style={styles.stopText}>9h30m</Text>
-                            </View>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={styles.departureText}>10:15 AM</Text>
-                                <Text style={[styles.dateText, { marginVertical: 10 }]}>Sat, Jul 18</Text>
-                            </View>
-                        </View>
-
-                        <View style={styles.separator} />
-
-                        <TouchableOpacity style={styles.btnShow}>
-                            <Text style={styles.showText}>Less info</Text>
-                        </TouchableOpacity>
-                    </View>
+                    ))}
 
                     <View style={styles.separator} />
 
@@ -213,10 +206,12 @@ const FlightDetails = ({ route, navigation }) => {
 
                 <View style={styles.footer}>
                     <View style={styles.footerItemLeft}>
-                        <Text style={styles.footerPrice}>$806</Text>
+                        <Text style={styles.footerPrice}>{flight.price}</Text>
                         <Text style={styles.footerPassenger}>Total price</Text>
                     </View>
-                    <TouchableOpacity style={styles.btnNext}>
+                    <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('TravellerInformation', {
+                        flight: flight, from: from, to: to, departDate: departDate, returnDate: returnDate, passengers: passengers, cabinClass: cabinClass, ticketType: ticketType
+                    })}>
                         <Text style={styles.btnText}>Select</Text>
                     </TouchableOpacity>
                 </View>
@@ -239,7 +234,6 @@ const styles = StyleSheet.create({
     headerLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-
     },
     goBackBtn: {
         marginRight: 20,
@@ -284,6 +278,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         width: '55%',
         height: 45,
+        width: 230,
         justifyContent: 'center'
     },
     dateTimeText: {

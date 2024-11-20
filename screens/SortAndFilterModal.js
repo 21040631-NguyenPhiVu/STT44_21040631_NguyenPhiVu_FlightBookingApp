@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Image, TextInput, ScrollView, Modal } from 'react-native';
 import { CheckBox } from '@rneui/themed';
 import { SafeAreaView } from 'react-native';
 
-const App = () => {
+const SortAndFilterModal = ({ visible, onClose }) => {
     const Stops = [
         'Any stops',
         '1 stop or nonstop',
@@ -18,7 +18,6 @@ const App = () => {
     ];
     const [selectedAirlines, setSelectedAirlines] = useState([]);
 
-    // Hàm để xử lý toggle checkbox cho từng hãng hàng không
     const handleAirlineToggle = (airline) => {
         if (selectedAirlines.includes(airline)) {
             setSelectedAirlines(selectedAirlines.filter((item) => item !== airline));
@@ -33,73 +32,75 @@ const App = () => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Image source={require('../assets/images/Cancel.png')} style={{ width: 30, height: 30 }} />
-                    </TouchableOpacity>
-                    <View style={styles.headerRight}>
-                        <Text style={styles.title}>Sorts & Filters</Text>
-                    </View>
-                </View>
-
-                <ScrollView style={{ width: '100%', height: 500 }}>
-                    <View>
-                        <Text style={styles.label}>Sort by</Text>
-                        <View style={styles.inputContainer}>
-                            <TextInput style={styles.input} placeholder="Best" placeholderTextColor={'#171A1F'} />
+        <Modal visible={visible} animationType="slide" transparent={true}>
+            <SafeAreaView style={{ flex: 1 }}>
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={onClose}>
+                            <Image source={require('../assets/images/Cancel.png')} style={{ width: 30, height: 30 }} />
+                        </TouchableOpacity>
+                        <View style={styles.headerRight}>
+                            <Text style={styles.title}>Sorts & Filters</Text>
                         </View>
                     </View>
 
-                    <View style={styles.stopContainer}>
-                        <Text style={styles.stopsText}>Stop</Text>
-                        {Stops.map((stop) => (
-                            <TouchableOpacity
-                                key={stop}
-                                style={styles.stopItem}
-                                onPress={() => setSelectedStop(stop)}
-                            >
-                                <Text style={styles.stopText}>{stop}</Text>
-                                {selectedStop === stop && (
-                                    <Image
-                                        source={require('../assets/images/checkIcon.png')}
-                                        style={styles.checkIcon}
-                                    />
-                                )}
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-
-                    <View style={styles.stopContainer}>
-                        <Text style={styles.stopsText}>Airlines</Text>
-                        {Airlines.map((airline) => (
-                            <View key={airline} style={styles.stopItem}>
-                                <Text style={styles.stopText}>{airline}</Text>
-                                <CheckBox
-                                    checked={selectedAirlines.includes(airline)}
-                                    onPress={() => handleAirlineToggle(airline)}
-                                    iconType="material-community"
-                                    checkedIcon="checkbox-marked"
-                                    uncheckedIcon="checkbox-blank-outline"
-                                    checkedColor="#10626A"
-                                    containerStyle={styles.checkbox}
-                                />
+                    <ScrollView style={{ width: '100%', height: 500 }}>
+                        <View>
+                            <Text style={styles.label}>Sort by</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput style={styles.input} placeholder="Best" placeholderTextColor={'#171A1F'} />
                             </View>
-                        ))}
-                    </View>
-                </ScrollView>
+                        </View>
 
-                <View style={styles.footer}>
-                    <TouchableOpacity onPress={clearAllSelections}>
-                        <Text style={styles.clearText}>Clear all</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.showButton}>
-                        <Text style={styles.showButtonText}>Show 20 of 30</Text>
-                    </TouchableOpacity>
+                        <View style={styles.stopContainer}>
+                            <Text style={styles.stopsText}>Stop</Text>
+                            {Stops.map((stop) => (
+                                <TouchableOpacity
+                                    key={stop}
+                                    style={styles.stopItem}
+                                    onPress={() => setSelectedStop(stop)}
+                                >
+                                    <Text style={styles.stopText}>{stop}</Text>
+                                    {selectedStop === stop && (
+                                        <Image
+                                            source={require('../assets/images/checkIcon.png')}
+                                            style={styles.checkIcon}
+                                        />
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+
+                        <View style={styles.stopContainer}>
+                            <Text style={styles.stopsText}>Airlines</Text>
+                            {Airlines.map((airline) => (
+                                <View key={airline} style={styles.stopItem}>
+                                    <Text style={styles.stopText}>{airline}</Text>
+                                    <CheckBox
+                                        checked={selectedAirlines.includes(airline)}
+                                        onPress={() => handleAirlineToggle(airline)}
+                                        iconType="material-community"
+                                        checkedIcon="checkbox-marked"
+                                        uncheckedIcon="checkbox-blank-outline"
+                                        checkedColor="#10626A"
+                                        containerStyle={styles.checkbox}
+                                    />
+                                </View>
+                            ))}
+                        </View>
+                    </ScrollView>
+
+                    <View style={styles.footer}>
+                        <TouchableOpacity onPress={clearAllSelections}>
+                            <Text style={styles.clearText}>Clear all</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.showButton}>
+                            <Text style={styles.showButtonText}>Show 20 of 30</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </Modal>
     );
 };
 
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     clearText: {
         fontSize: 20,
         color: '#9095A0',
-        fontWeight: 'bold',
+        fontWeight: '500',
     },
     showButton: {
         backgroundColor: '#2C46C3',
@@ -207,6 +208,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
     },
+    closeButton: {
+        position: 'absolute',
+        top: 20,
+        left: 20,
+        zIndex: 1,
+    },
+    closeIcon: {
+        width: 30,
+        height: 30,
+    },
 });
 
-export default App;
+export default SortAndFilterModal;

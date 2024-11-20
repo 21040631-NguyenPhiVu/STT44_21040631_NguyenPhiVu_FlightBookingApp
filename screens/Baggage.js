@@ -1,7 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { RadioButton } from 'react-native-paper';
 
-const SeatSelectionScreen = () => {
+const BaggageScreen = ({ route, navigation }) => {
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, firstName, lastName, gender, email, phone, phoneCode } = route.params;
+    const [selectedCabinBag, setSelectedCabinBag] = useState(null);
+    const [selectedCheckedBag, setSelectedCheckedBag] = useState(null);
+    const [selectedProtection, setSelectedProtection] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(parseFloat(flight.price.replace('$', '')));
+
+    useEffect(() => {
+        let newTotalPrice = parseFloat(flight.price.replace('$', ''));
+        if (selectedCheckedBag === 'checked') {
+            newTotalPrice += 19.99;
+        }
+        if (selectedProtection === 'protection') {
+            newTotalPrice += 19.99;
+        }
+        setTotalPrice(newTotalPrice);
+    }, [selectedCheckedBag, selectedProtection]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -32,9 +50,11 @@ const SeatSelectionScreen = () => {
                                             <Text style={styles.seatPrice}>Included per traveller</Text>
                                         </View>
                                     </View>
-                                    <TouchableOpacity>
-                                        <Text style={styles.selectedText}>Select</Text>
-                                    </TouchableOpacity>
+                                    <RadioButton
+                                        value="personal"
+                                        status={selectedCabinBag === 'personal' ? 'checked' : 'unchecked'}
+                                        onPress={() => setSelectedCabinBag('personal')}
+                                    />
                                 </View>
                                 <View style={styles.separator} />
                             </View>
@@ -50,27 +70,31 @@ const SeatSelectionScreen = () => {
                             <View>
                                 <View style={styles.flightItem}>
                                     <View style={styles.flightItemLeft}>
-                                        <Image source={require('../assets/images/Luggage.png')} style={{ width: 35, height: 35, resizeMode: 'contain', marginRight: 15, }} />
+                                        <Image source={require('../assets/images/Luggage.png')} style={{ width: 35, height: 35, resizeMode: 'contain', marginRight: 15 }} />
                                         <View>
                                             <Text style={{ fontSize: 16 }}>1 checked bag (Max weight 22.1 lbs)</Text>
                                             <Text style={styles.seatPrice}>from $19.99</Text>
                                         </View>
                                     </View>
-                                    <TouchableOpacity>
-                                        <Text style={styles.selectedText}>Select</Text>
-                                    </TouchableOpacity>
+                                    <RadioButton
+                                        value="checked"
+                                        status={selectedCheckedBag === 'checked' ? 'checked' : 'unchecked'}
+                                        onPress={() => setSelectedCheckedBag('checked')}
+                                    />
                                 </View>
                                 <View style={styles.flightItem}>
                                     <View style={styles.flightItemLeft}>
-                                        <Image source={require('../assets/images/Ban.png')} style={{ width: 35, height: 35, resizeMode: 'contain', marginRight: 15, }} />
+                                        <Image source={require('../assets/images/Ban.png')} style={{ width: 35, height: 35, resizeMode: 'contain', marginRight: 15 }} />
                                         <View>
                                             <Text style={styles.flightText}>No checked bag</Text>
                                             <Text style={styles.seatPrice}>$00.00</Text>
                                         </View>
                                     </View>
-                                    <TouchableOpacity>
-                                        <Text style={styles.selectedText}>Select</Text>
-                                    </TouchableOpacity>
+                                    <RadioButton
+                                        value="noChecked"
+                                        status={selectedCheckedBag === 'noChecked' ? 'checked' : 'unchecked'}
+                                        onPress={() => setSelectedCheckedBag('noChecked')}
+                                    />
                                 </View>
                             </View>
                         </ScrollView>
@@ -85,26 +109,28 @@ const SeatSelectionScreen = () => {
                                 <Text style={styles.seatPrice}>from $19.99</Text>
                             </View>
                         </View>
-                        <TouchableOpacity style={styles.btnSelect}>
-                            <Text style={styles.selectedText}>Select</Text>
-                        </TouchableOpacity>
+                        <RadioButton
+                            value="protection"
+                            status={selectedProtection === 'protection' ? 'checked' : 'unchecked'}
+                            onPress={() => setSelectedProtection('protection')}
+                        />
                     </View>
 
                     <View style={styles.containerProtection}>
                         <View style={styles.protectionItem}>
-                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15, }} />
+                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15 }} />
                             <Text style={styles.protectionContent}>Laboris exercitation Lorem anim pariatur </Text>
                         </View>
                         <View style={styles.protectionItem}>
-                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15, }} />
+                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15 }} />
                             <Text style={styles.protectionContent}>Laboris exercitation Lorem anim pariatur </Text>
                         </View>
                         <View style={styles.protectionItem}>
-                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15, }} />
+                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15 }} />
                             <Text style={styles.protectionContent}>Laboris exercitation Lorem anim pariatur </Text>
                         </View>
                         <View style={styles.protectionItem}>
-                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15, }} />
+                            <Image source={require('../assets/images/checkProtection.png')} style={{ width: 25, height: 25, resizeMode: 'contain', marginRight: 15 }} />
                             <Text style={styles.protectionContent}>Laboris exercitation Lorem anim pariatur </Text>
                         </View>
                     </View>
@@ -117,23 +143,25 @@ const SeatSelectionScreen = () => {
                                 <Text style={styles.seatPrice}>$00.00</Text>
                             </View>
                         </View>
-                        <TouchableOpacity style={styles.btnSelect}>
-                            <Text style={styles.selectedText}>Select</Text>
-                        </TouchableOpacity>
+                        <RadioButton
+                            value="noProtection"
+                            status={selectedProtection === 'noProtection' ? 'checked' : 'unchecked'}
+                            onPress={() => setSelectedProtection('noProtection')}
+                        />
                     </View>
                 </ScrollView>
 
                 <View style={styles.footer}>
                     <View style={styles.footerItemLeft}>
-                        <Text style={styles.footerPrice}>$806</Text>
-                        <Text style={styles.footerPassenger}>1 adult</Text>
+                        <Text style={styles.footerPrice}>${totalPrice.toFixed(2)}</Text>
+                        <Text style={styles.footerPassenger}>{passengers.adults + passengers.children + passengers.infants} traveller{passengers.adults + passengers.children + passengers.infants > 1 ? 's' : ''}</Text>
                     </View>
-                    <TouchableOpacity style={styles.btnNext}>
+                    <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('Seat', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode })}>
                         <Text style={styles.btnText}>Next</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-        </SafeAreaView >
+        </SafeAreaView>
     );
 };
 
@@ -154,13 +182,11 @@ const styles = StyleSheet.create({
     containerProtection: { width: '90%', backgroundColor: '#fff', height: 330, alignSelf: 'center', borderRadius: 8, marginTop: 10, borderColor: '#F3F4F6', borderWidth: 2 },
     protectionItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, marginTop: 10, marginBottom: 15 },
     protectionContent: { fontSize: 20, color: '#323842', fontWeight: 'normal' },
-
     footer: { position: 'absolute', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, height: 70, bottom: 0, left: 0, right: 0, backgroundColor: '#fff' },
     footerPrice: { fontSize: 28, fontWeight: 'bold' },
     footerPassenger: { color: '#9095A0', fontSize: 16, fontWeight: 'normal', marginTop: 5 },
     btnNext: { backgroundColor: '#2C46C3', paddingVertical: 13, paddingHorizontal: 50, borderRadius: 8 },
     btnText: { color: '#fff', fontSize: 16, fontWeight: '500' },
-
 });
 
-export default SeatSelectionScreen;
+export default BaggageScreen;
