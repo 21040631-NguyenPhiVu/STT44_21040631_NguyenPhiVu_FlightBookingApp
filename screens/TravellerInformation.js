@@ -47,9 +47,8 @@ const TravellerInformation = ({ route, navigation }) => {
 
             if (response.status === 201) {
                 navigation.navigate('Baggage', { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, firstName, lastName, gender, email, phone, phoneCode });
-                alert('Travel information saved successfully');
             } else {
-                alert('Error', data.message || 'Failed to save travel information');
+                Alert.alert('Error', data.message || 'Failed to save travel information');
             }
         } catch (error) {
             Alert.alert('Error', 'An error occurred. Please try again.');
