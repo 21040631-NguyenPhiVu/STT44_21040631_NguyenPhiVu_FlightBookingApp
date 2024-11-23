@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, SafeAreaView } from 'react-native';
 
 const SeatScreen = ({ route, navigation }) => {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice: initialTotalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice: initialTotalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName } = route.params;
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
 
     const handleSelectSeat = (seatPrice) => {
@@ -77,7 +77,7 @@ const SeatScreen = ({ route, navigation }) => {
                         <Text style={styles.footerPrice}>${totalPrice.toFixed(2)}</Text>
                         <Text style={styles.footerPassenger}>{passengers.adults + passengers.children + passengers.infants} traveller{passengers.adults + passengers.children + passengers.infants > 1 ? 's' : ''}</Text>
                     </View>
-                    <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('Payment', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode })}>
+                    <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('Payment', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName })}>
                         <Text style={styles.btnText}>Next</Text>
                     </TouchableOpacity>
                 </View>

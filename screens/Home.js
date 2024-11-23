@@ -133,7 +133,7 @@ export default function StartScreen({ route }) {
                     </View>
                 </View>
             </View>
-            <RoundTrip visible={visible} onClose={closeModal} />
+            <RoundTrip visible={visible} onClose={closeModal} initialName={initialName} />
         </SafeAreaView >
     );
 }

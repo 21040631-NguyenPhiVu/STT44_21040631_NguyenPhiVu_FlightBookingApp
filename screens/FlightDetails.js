@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import Heart from "react-animated-heart";
 
 const FlightDetails = ({ route, navigation }) => {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, initialName } = route.params;
     const [likedFlights, setLikedFlights] = useState([]);
     const formattedDepartDate = departDate ? departDate : '';
     const formattedReturnDate = returnDate ? returnDate : '';
@@ -210,7 +210,7 @@ const FlightDetails = ({ route, navigation }) => {
                         <Text style={styles.footerPassenger}>Total price</Text>
                     </View>
                     <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('TravellerInformation', {
-                        flight: flight, from: from, to: to, departDate: departDate, returnDate: returnDate, passengers: passengers, cabinClass: cabinClass, ticketType: ticketType
+                        flight: flight, from: from, to: to, departDate: departDate, returnDate: returnDate, passengers: passengers, cabinClass: cabinClass, ticketType: ticketType, initialName: initialName
                     })}>
                         <Text style={styles.btnText}>Select</Text>
                     </TouchableOpacity>

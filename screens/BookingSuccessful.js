@@ -2,7 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView } from "react-native";
 import { Card } from "react-native-elements";
 export default function BookingSuccessful({ route, navigation }) {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, travellerDetails, initialName } = route.params;
+    const { firstName, lastName, gender, email, phone, phoneCode } = travellerDetails;
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -47,7 +48,7 @@ export default function BookingSuccessful({ route, navigation }) {
                         <Text style={styles.bookingText}>Booking detail</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.btnHome} onPress={() => navigation.navigate('Home', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode })}>
+                    <TouchableOpacity style={styles.btnHome} onPress={() => navigation.navigate('Home', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName })}>
                         <Text style={styles.homeText}>Home</Text>
                     </TouchableOpacity>
                 </View>

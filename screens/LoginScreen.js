@@ -18,7 +18,7 @@ export default function LoginScreen() {
         }
 
         try {
-            const response = await fetch('http://192.168.0.178:4000/login', {
+            const response = await fetch('http://localhost:4000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -35,7 +35,10 @@ export default function LoginScreen() {
                 setModalMessage("Login successful");
                 setModalVisible(true);
                 const initialName = data.user.lastName.charAt(0).toUpperCase();
-                navigation.navigate('Home', { user: data.user, initialName });
+                setTimeout(() => {
+                    setModalVisible(false);
+                    navigation.navigate('Home', { user: data.user, initialName });
+                }, 2000);
             } else {
                 setModalMessage(data.message || "Login failed");
                 setModalVisible(true);

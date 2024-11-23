@@ -8,7 +8,7 @@ import PassengerOptionsModal from "../screens/PassengerOptionsModal";
 import { useRoute } from '@react-navigation/native';
 import { format, parseISO } from 'date-fns';
 
-export default function RoundTrip({ visible, onClose }) {
+export default function RoundTrip({ visible, onClose, initialName }) {
     const navigation = useNavigation();
     const route = useRoute();
     const routeParams = route.params || {};
@@ -279,7 +279,7 @@ export default function RoundTrip({ visible, onClose }) {
             onClose();
         }
         setTimeout(() => {
-            navigation.navigate('FlightResults', flightData);
+            navigation.navigate('FlightResults', flightData, initialName);
         }, 100);
     };
 

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, ScrollView, Alert } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, ScrollView, Modal } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import AlertModal from './AlertModal';
@@ -43,7 +43,10 @@ export default function RegisterScreen() {
             if (response.status === 201) {
                 setModalMessage("User registered successfully");
                 setModalVisible(true);
-                navigation.navigate('LoginScreen');
+                setTimeout(() => {
+                    setModalVisible(false);
+                    navigation.navigate('LoginScreen');
+                }, 2000);
             } else {
                 setModalMessage(data.message || "Registration failed");
                 setModalVisible(true);
@@ -108,11 +111,21 @@ export default function RegisterScreen() {
                 </TouchableOpacity>
             </ScrollView>
 
-            <AlertModal
+            <Modal
+                transparent={true}
+                animationType="fade"
                 visible={modalVisible}
-                message={modalMessage}
-                onClose={() => setModalVisible(false)}
-            />
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalBackground}>
+                    <View style={styles.modalContainer}>
+                        <Text style={styles.modalMessage}>{modalMessage}</Text>
+                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.closeButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -164,5 +177,33 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 20,
         marginVertical: 10,
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContainer: {
+        width: "80%",
+        padding: 20,
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    modalMessage: {
+        fontSize: 18,
+        textAlign: "center",
+        marginBottom: 20,
+    },
+    closeButton: {
+        backgroundColor: "#0d308c",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+    },
+    closeButtonText: {
+        color: "#fff",
+        fontSize: 16,
     },
 });

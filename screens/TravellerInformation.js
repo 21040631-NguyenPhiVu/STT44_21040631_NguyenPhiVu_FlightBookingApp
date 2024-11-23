@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, SafeAreaVi
 import { useNavigation } from '@react-navigation/native';
 
 const TravellerInformation = ({ route, navigation }) => {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, initialName } = route.params;
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [gender, setGender] = useState('');
@@ -16,14 +16,7 @@ const TravellerInformation = ({ route, navigation }) => {
             alert('Error', 'Please fill in all required fields');
             return;
         }
-
-        const travelInfo = {
-            firstName,
-            lastName,
-            gender,
-            email,
-            phoneCode,
-            phone,
+        navigation.navigate('Baggage', {
             flight,
             from,
             to,
@@ -31,28 +24,15 @@ const TravellerInformation = ({ route, navigation }) => {
             returnDate,
             passengers,
             cabinClass,
-            ticketType
-        };
-
-        try {
-            const response = await fetch('http://localhost:4000/api/travelinfo', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(travelInfo),
-            });
-
-            const data = await response.json();
-
-            if (response.status === 201) {
-                navigation.navigate('Baggage', { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, firstName, lastName, gender, email, phone, phoneCode });
-            } else {
-                Alert.alert('Error', data.message || 'Failed to save travel information');
-            }
-        } catch (error) {
-            Alert.alert('Error', 'An error occurred. Please try again.');
-        }
+            ticketType,
+            firstName,
+            lastName,
+            gender,
+            email,
+            phone,
+            phoneCode,
+            initialName
+        });
     };
 
     return (
@@ -122,7 +102,6 @@ const TravellerInformation = ({ route, navigation }) => {
                                     <Picker.Item label="+01" value="+01" />
                                     <Picker.Item label="+07" value="+07" />
                                     <Picker.Item label="+84" value="+84" />
-                                    {/* Add more phone codes as needed */}
                                 </Picker>
                             </View>
                             <TextInput style={styles.inputPhone} value={phone} onChangeText={setPhone} />
@@ -144,5 +123,23 @@ const TravellerInformation = ({ route, navigation }) => {
     );
 };
 
-
+const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#fff' },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 },
+    title: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginVertical: 10 },
+    separator: { height: 2, backgroundColor: '#F3F4F6', marginVertical: 15, width: '100%', alignSelf: 'stretch' },
+    flightToText: { fontSize: 18, color: '#323842', fontWeight: 'bold', marginVertical: 10, paddingHorizontal: 20 },
+    label: { fontSize: 16, color: '#323842', marginBottom: 5, paddingHorizontal: 20 },
+    input: { paddingLeft: 10, borderRadius: 5, fontSize: 18, backgroundColor: '#f3f4f6', height: 50, marginHorizontal: 20 },
+    item: { marginBottom: 20 },
+    pickerContainer: { backgroundColor: '#ffffff', borderRadius: 5, marginHorizontal: 20, height: 40, borderWidth: 1, borderColor: '#BCC1CA', marginHorizontal: 20 },
+    picker: { height: 40, width: '100%' },
+    phoneContainer: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 20 },
+    inputPhone: { flex: 1, paddingLeft: 10, borderRadius: 5, fontSize: 18, backgroundColor: '#f3f4f6', height: 45 },
+    footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, height: 70, backgroundColor: '#fff' },
+    footerPrice: { fontSize: 28, fontWeight: 'bold' },
+    footerPassenger: { color: '#9095A0', fontSize: 16, fontWeight: 'normal', marginTop: 5 },
+    btnNext: { backgroundColor: '#2C46C3', paddingVertical: 13, paddingHorizontal: 50, borderRadius: 8 },
+    btnText: { color: '#fff', fontSize: 16, fontWeight: '500' },
+});
 export default TravellerInformation;

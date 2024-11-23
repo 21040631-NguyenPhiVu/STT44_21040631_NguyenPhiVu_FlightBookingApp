@@ -9,7 +9,7 @@ import Heart from "react-animated-heart";
 const SelectFlight = ({ route }) => {
     const navigation = useNavigation();
     const [isClick, setClick] = useState(false);
-    const { from, to, fromCode, toCode, departDate, returnDate, passengers, cabinClass, ticketType } = route.params;
+    const { from, to, fromCode, toCode, departDate, returnDate, passengers, cabinClass, ticketType, initialName } = route.params;
     const formattedDepartDate = departDate ? departDate.split(', ').slice(1).join(' ') : '';
     const formattedReturnDate = returnDate ? returnDate.split(', ').slice(1).join(' ') : '';
     const handleGoBack = () => {
@@ -23,6 +23,7 @@ const SelectFlight = ({ route }) => {
             passengers: route.params.passengers,
             cabinClass: route.params.cabinClass,
             ticketType: route.params.ticketType,
+            initialName: route.params.initialName,
         });
     };
 
@@ -126,7 +127,7 @@ const SelectFlight = ({ route }) => {
                             <TouchableOpacity
                                 key={index}
                                 style={styles.flightCard}
-                                onPress={() => navigation.navigate('FlightDetails', { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType })}
+                                onPress={() => navigation.navigate('FlightDetails', { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, initialName })}
                             >
                                 <View style={styles.flightInfo}>
                                     {flight.legs.map((leg, legIndex) => (

@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { RadioButton } from 'react-native-paper';
 
 const BaggageScreen = ({ route, navigation }) => {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, firstName, lastName, gender, email, phone, phoneCode } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName } = route.params;
     const [selectedCabinBag, setSelectedCabinBag] = useState(null);
     const [selectedCheckedBag, setSelectedCheckedBag] = useState(null);
     const [selectedProtection, setSelectedProtection] = useState(null);
@@ -156,7 +156,7 @@ const BaggageScreen = ({ route, navigation }) => {
                         <Text style={styles.footerPrice}>${totalPrice.toFixed(2)}</Text>
                         <Text style={styles.footerPassenger}>{passengers.adults + passengers.children + passengers.infants} traveller{passengers.adults + passengers.children + passengers.infants > 1 ? 's' : ''}</Text>
                     </View>
-                    <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('Seat', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode })}>
+                    <TouchableOpacity style={styles.btnNext} onPress={() => navigation.navigate('Seat', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName })}>
                         <Text style={styles.btnText}>Next</Text>
                     </TouchableOpacity>
                 </View>

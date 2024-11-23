@@ -175,12 +175,6 @@ app.get('/api/flights', async (req, res) => {
 });
 
 const travelInfoSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    gender: String,
-    email: String,
-    phoneCode: String,
-    phone: String,
     flight: Object,
     from: String,
     to: String,
@@ -188,7 +182,16 @@ const travelInfoSchema = new mongoose.Schema({
     returnDate: String,
     passengers: Object,
     cabinClass: String,
-    ticketType: String
+    totalPrice: Number,
+    ticketType: String,
+    travellerDetails: {
+        firstName: String,
+        lastName: String,
+        gender: String,
+        email: String,
+        phone: String,
+        phoneCode: String,
+    },
 });
 
 const TravelInfo = mongoose.model('TravelInfo', travelInfoSchema);

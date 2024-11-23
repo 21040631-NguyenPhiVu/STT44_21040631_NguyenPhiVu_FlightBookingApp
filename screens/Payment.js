@@ -1,9 +1,8 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, SafeAreaView, ScrollView, Modal } from "react-native";
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 
 export default function Payment({ route, navigation }) {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName } = route.params;
     const [modalVisible, setModalVisible] = useState(false);
     const [cardNumber, setCardNumber] = useState('');
     const [cardHolder, setCardHolder] = useState('');
@@ -13,6 +12,49 @@ export default function Payment({ route, navigation }) {
         { type: 'MasterCard', number: '**** 9876' }
     ]);
     const [editIndex, setEditIndex] = useState(null);
+
+    const handleCheckout = async () => {
+        const paymentInfo = {
+            flight,
+            from,
+            to,
+            departDate,
+            returnDate,
+            passengers,
+            cabinClass,
+            totalPrice,
+            ticketType,
+            travellerDetails: {
+                firstName,
+                lastName,
+                gender,
+                email,
+                phone,
+                phoneCode,
+            },
+        };
+
+        try {
+            const response = await fetch('http://localhost:4000/api/travelinfo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(paymentInfo),
+            });
+
+            const data = await response.json();
+
+            if (response.status == 201) {
+                console.log('Travel information saved successfully');
+                navigation.navigate('BookingSuccessful', paymentInfo, initialName);
+            } else {
+                console.error(data.message || 'Failed to save travel information');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleAddCard = () => {
         if (cardNumber && cardHolder && expiryDate && cvv) {
@@ -109,7 +151,7 @@ export default function Payment({ route, navigation }) {
                         <Text style={{ fontSize: 20, color: '#323842', marginLeft: 20, fontWeight: 'bold' }}>${totalPrice.toFixed(2)}</Text>
                         <Text style={{ fontSize: 18, color: '#9095A0', marginLeft: 20, }}>{passengers.adults + passengers.children + passengers.infants} traveller{passengers.adults + passengers.children + passengers.infants > 1 ? 's' : ''}</Text>
                     </View>
-                    <TouchableOpacity style={styles.btnCheckout} onPress={() => navigation.navigate('BookingSuccessful', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode })}>
+                    <TouchableOpacity style={styles.btnCheckout} onPress={handleCheckout}>
                         <Text style={styles.textCheckout}>Checkout</Text>
                     </TouchableOpacity>
                 </View>
