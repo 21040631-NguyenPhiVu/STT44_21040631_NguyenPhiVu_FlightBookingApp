@@ -48,7 +48,7 @@ export default function BookingSuccessful({ route, navigation }) {
                         <Text style={styles.bookingText}>Booking detail</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.btnHome} onPress={() => navigation.navigate('Home', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName })}>
+                    <TouchableOpacity style={styles.btnHome} onPress={() => navigation.navigate('Home', { initialName })}>
                         <Text style={styles.homeText}>Home</Text>
                     </TouchableOpacity>
                 </View>

@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'rea
 import { useNavigation } from '@react-navigation/native';
 
 const SeatSelectionScreen = ({ route, navigation }) => {
-    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice: initialTotalPrice, ticketType } = route.params;
+    const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice: initialTotalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName } = route.params;
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [totalPrice, setTotalPrice] = useState(initialTotalPrice);
 
@@ -51,7 +51,7 @@ const SeatSelectionScreen = ({ route, navigation }) => {
     };
 
     const handleConfirmSelection = () => {
-        navigation.navigate('Seat', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType });
+        navigation.navigate('Seat', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice: initialTotalPrice, ticketType, firstName, lastName, gender, email, phone, phoneCode, initialName });
     };
 
     return (
