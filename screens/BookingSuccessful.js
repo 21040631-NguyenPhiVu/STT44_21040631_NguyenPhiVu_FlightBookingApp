@@ -4,6 +4,9 @@ import { Card } from "react-native-elements";
 export default function BookingSuccessful({ route, navigation }) {
     const { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, travellerDetails, initialName } = route.params;
     const { firstName, lastName, gender, email, phone, phoneCode } = travellerDetails;
+    const handleGoBookingDetails = () => {
+        navigation.navigate('FlightDetails', { flight, from, to, departDate, returnDate, passengers, cabinClass, totalPrice, ticketType, travellerDetails, initialName });
+    };
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -44,7 +47,7 @@ export default function BookingSuccessful({ route, navigation }) {
                     <Text style={styles.price}>${totalPrice.toFixed(2)}</Text>
                     <View style={styles.separator} />
 
-                    <TouchableOpacity style={styles.btnBooking}>
+                    <TouchableOpacity style={styles.btnBooking} onPress={handleGoBookingDetails}>
                         <Text style={styles.bookingText}>Booking detail</Text>
                     </TouchableOpacity>
 

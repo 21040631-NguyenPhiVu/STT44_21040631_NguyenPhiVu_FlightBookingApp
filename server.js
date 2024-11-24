@@ -74,6 +74,38 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.put('/api/users/:id', async (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, email, phone, password, newPassword } = req.body;
+
+    try {
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (password && newPassword) {
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Current password is incorrect' });
+            }
+            user.password = await bcrypt.hash(newPassword, 10);
+        }
+
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.email = email;
+        user.phone = phone;
+
+        await user.save();
+
+        res.status(200).json({ message: 'Profile updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating profile', error });
+    }
+});
+
 const fromSuggestionSchema = new mongoose.Schema({
     id: String,
     city: String,

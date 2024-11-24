@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, ScrollView, Modal } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import AlertModal from './AlertModal';
+import { Picker } from '@react-native-picker/picker';
 
 export default function RegisterScreen() {
     const navigation = useNavigation();
@@ -86,8 +86,17 @@ export default function RegisterScreen() {
                     <TextInput placeholder="Enter your last name" placeholderTextColor="#d8d8d8" value={lastName} onChangeText={setLastName} style={styles.input} />
                 </View>
 
-                <View style={styles.inputContainer}>
-                    <TextInput placeholder="Enter your gender" placeholderTextColor="#d8d8d8" value={gender} onChangeText={setGender} style={styles.input} />
+                <View style={[styles.inputContainer, { borderBottomWidth: 0 }]}>
+                    <Picker
+                        selectedValue={gender}
+                        onValueChange={(itemValue) => setGender(itemValue)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Select Gender" value="" />
+                        <Picker.Item label="Male" value="Male" />
+                        <Picker.Item label="Female" value="Female" />
+                        <Picker.Item label="Other" value="Other" />
+                    </Picker>
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -168,6 +177,11 @@ const styles = StyleSheet.create({
     input: {
         fontSize: 18,
         height: 45,
+    },
+    picker: {
+        height: 45,
+        borderColor: '#d8d8d8',
+        color: '#000',
     },
     btnSignup: {
         width: "90%",
